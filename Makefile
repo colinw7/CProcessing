@@ -7,6 +7,6 @@ clean:
 	rm src/Makefile
 	cd test/Schizzo2; qmake; make clean
 	rm test/Schizzo2/Makefile
-	rm lib/libCProcessing.a
+	rm -f lib/libCProcessing.a
 	rm -f bin/CQNurikabe
 	rm -f test/Schizzo2/CProcessingSchizzo2
