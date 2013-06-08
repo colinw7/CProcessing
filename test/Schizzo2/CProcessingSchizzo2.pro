@@ -33,4 +33,4 @@ unix:LIBS += \
 -L../../../CStrUtil/lib \
 -L../../../CFile/lib \
 -lCProcessing -lCImageLib -lCFile -lCOS -lCStrUtil \
--lglut -lGLU -lGL
+-lglut -lGLU -lGL -lpng -ljpeg
