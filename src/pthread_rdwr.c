@@ -1,6 +1,6 @@
 #include <pthread.h>
 #include <assert.h>
-#include <CThread/pthread_rdwr.h>
+#include <pthread_rdwr.h>
 
 /* TODO: Writer should get mutex before reader */
 
