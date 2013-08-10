@@ -56,6 +56,7 @@ INCLUDEPATH += \
 ../include \
 ../../CMath/include \
 ../../CFile/include \
+../../CFont/include \
 ../../CImageLib/include \
 ../../COS/include \
 ../../CStrUtil/include \
