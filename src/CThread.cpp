@@ -5,19 +5,21 @@
 
 // TODO: thread cleanup (thread_cleanup_[push|pop]) ?
 
-#include <CThread/CThread.h>
-#include <CFuncs/CFuncs.h>
-#include <CThrow/CThrow.h>
+#include <CThread.h>
+#include <CFuncs.h>
+#include <CThrow.h>
 
 extern "C" {
 #include <sys/shm.h>
 #include "pthread.h"
 }
 
+#include <algorithm>
 #include <cstring>
 #include <cstdarg>
 #include <cerrno>
 #include <cstdio>
+#include <csignal>
 
 using std::string;
 using std::list;
@@ -70,11 +72,11 @@ CThreadArray::
   delete alive_mutex_;
   delete thread_cond_;
 
-  for_each(procs_.begin(), procs_.end(), CDeletePointer());
+  std::for_each(procs_.begin(), procs_.end(), CDeletePointer());
 
-  for_each(alive_threads_.begin(), alive_threads_.end(), CDeletePointer());
+  std::for_each(alive_threads_.begin(), alive_threads_.end(), CDeletePointer());
 
-  for_each(dead_threads_.begin(), dead_threads_.end(), CDeletePointer());
+  std::for_each(dead_threads_.begin(), dead_threads_.end(), CDeletePointer());
 }
 
 void
@@ -225,7 +227,7 @@ void
 CThreadArray::
 deleteArrayProcs()
 {
-  for_each(procs_.begin(), procs_.end(), CDeletePointer());
+  std::for_each(procs_.begin(), procs_.end(), CDeletePointer());
 
   procs_.clear();
 }
