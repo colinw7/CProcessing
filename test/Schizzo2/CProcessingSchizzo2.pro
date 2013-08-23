@@ -22,6 +22,7 @@ INCLUDEPATH += \
 ../../../CProcessing/include \
 ../../../CImageLib/include \
 ../../../CMath/include \
+../../../CThread/include \
 ../../../COS/include \
 ../../../CUtil/include \
 .
@@ -30,7 +31,8 @@ unix:LIBS += \
 -L../../lib \
 -L../../../COS/lib \
 -L../../../CImageLib/lib \
+-L../../../CThread/lib \
 -L../../../CStrUtil/lib \
 -L../../../CFile/lib \
--lCProcessing -lCImageLib -lCFile -lCOS -lCStrUtil \
+-lCProcessing -lCImageLib -lCThread -lCFile -lCOS -lCStrUtil \
 -lglut -lGLU -lGL -lpng -ljpeg

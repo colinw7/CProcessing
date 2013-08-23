@@ -58,6 +58,7 @@ INCLUDEPATH += \
 ../../CFile/include \
 ../../CFont/include \
 ../../CImageLib/include \
+../../CThread/include \
 ../../COS/include \
 ../../CStrUtil/include \
 ../../CUtil/include \
