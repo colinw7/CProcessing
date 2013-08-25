@@ -20,7 +20,6 @@ CQImageFilter.cpp \
 CQGLControl.cpp \
 CGLTexture.cpp \
 CGLUtil.cpp \
-CRGBName.cpp \
 
 HEADERS += \
 ../include/Array1D.h \
@@ -46,7 +45,6 @@ CQImageFilter.h \
 CQGLControl.h \
 CGLTexture.h \
 CGLUtil.h \
-CRGBName.h \
 
 OBJECTS_DIR = ../obj
 
@@ -61,5 +59,6 @@ INCLUDEPATH += \
 ../../CThread/include \
 ../../COS/include \
 ../../CStrUtil/include \
+../../CRGBName/include \
 ../../CUtil/include \
 .

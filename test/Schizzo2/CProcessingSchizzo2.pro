@@ -34,5 +34,6 @@ unix:LIBS += \
 -L../../../CThread/lib \
 -L../../../CStrUtil/lib \
 -L../../../CFile/lib \
--lCProcessing -lCImageLib -lCThread -lCFile -lCOS -lCStrUtil \
+-L../../../CRGBName/lib \
+-lCProcessing -lCImageLib -lCThread -lCFile -lCOS -lCStrUtil -lCRGBName \
 -lglut -lGLU -lGL -lpng -ljpeg
