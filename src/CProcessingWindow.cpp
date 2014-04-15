@@ -57,7 +57,7 @@ keyPressEvent(QKeyEvent *event)
   if (str.length() != 1)
     return;
 
-  CProcessing::keyPress(event->key(), str[0].toAscii());
+  CProcessing::keyPress(event->key(), str[0].toLatin1());
 }
 
 void
@@ -69,5 +69,5 @@ keyReleaseEvent(QKeyEvent *event)
   if (str.length() != 1)
     return;
 
-  CProcessing::keyRelease(event->key(), str[0].toAscii());
+  CProcessing::keyRelease(event->key(), str[0].toLatin1());
 }

@@ -3,6 +3,7 @@
 
 #include <PObject.h>
 #include <CGeneric.h>
+#include <cstring>
 
 // Array of fundamental type objects
 
