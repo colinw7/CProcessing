@@ -91,7 +91,7 @@ class FArray2D : public PObject {
 
   ~FArray2D() {
     // must be a fundamental type
-    CGENERIC_ASSERT(CGenericIsFundamental(T))
+    //CGENERIC_ASSERT(CGenericIsFundamental(T))
   }
 
   CRef operator[](int ind) const {
@@ -307,7 +307,7 @@ class PArray2D : public PObject {
 
  ~PArray2D() {
     // Must be a PObject derived class
-    CGENERIC_ASSERT(CGenericIsDerived(T,PObject))
+    //CGENERIC_ASSERT(CGenericIsDerived(T,PObject))
   }
 
   Ref operator[](int ind) {

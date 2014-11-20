@@ -37,7 +37,7 @@ class FArrayList : public PObject {
 
  ~FArrayList() {
     // must be a fundamental type
-    CGENERIC_ASSERT(CGenericIsFundamental(T))
+    //CGENERIC_ASSERT(CGenericIsFundamental(T))
   }
 
   void add(const T &t) {
@@ -176,7 +176,7 @@ class PArrayList : public PObject {
 
  ~PArrayList() {
     // Must be a PObject derived class
-    CGENERIC_ASSERT(CGenericIsDerived(T,PObject))
+    //CGENERIC_ASSERT(CGenericIsDerived(T,PObject))
   }
 
   void add(PT t) {

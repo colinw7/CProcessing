@@ -194,7 +194,7 @@ class PArray1D : public PObject {
 
  ~PArray1D() {
     // Must be a PObject derived class
-    CGENERIC_ASSERT(CGenericIsDerived(T,PObject))
+    //CGENERIC_ASSERT(CGenericIsDerived(T,PObject))
   }
 
   Ref operator[](int ind) {
