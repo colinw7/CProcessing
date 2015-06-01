@@ -2105,7 +2105,7 @@ color::
 brightness() const
 {
   if (mode == RGB)
-    return CHSB::fromRGB(CRGB(c1, c2, c3)).getBrightness();
+    return CRGB(c1, c2, c3).toHSB().getBrightness();
   else
     return CHSB(c1, c2, c3).getBrightness();
 }
