@@ -1220,8 +1220,7 @@ namespace CProcessing {
   double lerp(double value1, double value2, double amt);
 
   // map
-  double map(double value, double low1, double high1,
-             double low2, double high2);
+  double map(double value, double low1, double high1, double low2, double high2);
 
   // random in range
   double random(double high);
