@@ -4,9 +4,9 @@ all:
 
 clean:
 	cd src; qmake; make clean
-	rm src/Makefile
+	rm -f src/Makefile
 	cd test/Schizzo2; qmake; make clean
-	rm test/Schizzo2/Makefile
+	rm -f test/Schizzo2/Makefile
 	rm -f lib/libCProcessing.a
 	rm -f bin/CQNurikabe
 	rm -f test/Schizzo2/CProcessingSchizzo2
