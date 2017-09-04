@@ -3,11 +3,14 @@
 #include <CProcessingWindow.h>
 #include <CProcessingWindow3D.h>
 
-#include <QApplication>
-#include <QPainter>
-#include <QPen>
-#include <QBrush>
-#include <QColormap>
+#define USE_SVG 1
+
+#ifdef USE_SVG
+#include <CSVG.h>
+#include <CSVGImageRenderer.h>
+#endif
+
+#include <CQImageFilter.h>
 
 #include <CMathGen.h>
 #include <CMathRand.h>
@@ -15,14 +18,13 @@
 #include <CHSB.h>
 #include <CRGBName.h>
 #include <COSTime.h>
+#include <CRGBUtil.h>
 
-#ifdef USE_SVG
-#include <CSVG.h>
-#include <CSVGRender.h>
-#include <CQSVGDataRenderer.h>
-#endif
-
-#include <CQImageFilter.h>
+#include <QApplication>
+#include <QPainter>
+#include <QPen>
+#include <QBrush>
+#include <QColormap>
 
 typedef std::vector<ShapePoint> ShapePointList;
 
@@ -35,11 +37,12 @@ static PGraphics          graphics_;
 static int                shapeMode_;
 static ShapePointList     shapePointList_;
 static CHRTime            startTime_;
+static CImagePtr          image_;
 #ifdef USE_SVG
 static CSVG              *svg_;
-static CQSVGDataRenderer *svgRenderer_;
-static CSVGRender        *svgRender_;
+static CSVGImageRenderer *svgRenderer_;
 #endif
+static CImageRenderer2D  *irenderer_;
 static CProcessingTimer  *timer_;
 
 int    &CProcessing::width  = graphics_.width;
@@ -328,13 +331,19 @@ CSVG *
 getSVG()
 {
   if (! svg_) {
+    CImageNoSrc src;
+
+    image_ = CImageMgrInst->createImage(src);
+
     svg_         = new CSVG;
-    svgRenderer_ = new CQSVGDataRenderer;
-    svgRender_   = new CSVGRender(svgRenderer_);
+    irenderer_   = new CImageRenderer2D(image_);
+    svgRenderer_ = new CSVGImageRenderer(irenderer_);
+
+    svg_->setRenderer(svgRenderer_);
 
     svg_->init();
 
-    svg_->setSimplifyPath(true);
+    //svg_->setSimplifyPath(true);
   }
 
   return svg_;
@@ -1567,21 +1576,21 @@ double
 CProcessing::
 noise(double x)
 {
-  return CMathRand::noise(x, x, x);
+  return CMathGen::noise(x, x, x);
 }
 
 double
 CProcessing::
 noise(double x, double y)
 {
-  return CMathRand::noise(x, y, x + y);
+  return CMathGen::noise(x, y, x + y);
 }
 
 double
 CProcessing::
 noise(double x, double y, double z)
 {
-  return CMathRand::noise(x, y, z);
+  return CMathGen::noise(x, y, z);
 }
 
 double
@@ -2057,7 +2066,7 @@ red() const
   else {
     CHSB hsb(c1, c2, c3);
 
-    CRGB rgb = hsb.toRGB();
+    CRGB rgb = CRGBUtil::HSBtoRGB(hsb);
 
     return rgb.getRed();
   }
@@ -2072,7 +2081,7 @@ green() const
   else {
     CHSB hsb(c1, c2, c3);
 
-    CRGB rgb = hsb.toRGB();
+    CRGB rgb = CRGBUtil::HSBtoRGB(hsb);
 
     return rgb.getGreen();
   }
@@ -2087,7 +2096,7 @@ blue() const
   else {
     CHSB hsb(c1, c2, c3);
 
-    CRGB rgb = hsb.toRGB();
+    CRGB rgb = CRGBUtil::HSBtoRGB(hsb);
 
     return rgb.getBlue();
   }
@@ -2105,7 +2114,7 @@ color::
 brightness() const
 {
   if (mode == RGB)
-    return CRGB(c1, c2, c3).toHSB().getBrightness();
+    return CRGBUtil::RGBtoHSB(CRGB(c1, c2, c3)).getBrightness();
   else
     return CHSB(c1, c2, c3).getBrightness();
 }
@@ -2124,7 +2133,7 @@ qcolor() const
   else {
     CHSB hsb(c1, c2, c3);
 
-    CRGB rgb = hsb.toRGB();
+    CRGB rgb = CRGBUtil::HSBtoRGB(hsb);
 
     qr = min(max(rgb.getRed  (), 0.0), 1.0)*255;
     qg = min(max(rgb.getGreen(), 0.0), 1.0)*255;
@@ -2157,7 +2166,7 @@ toInt() const
   else {
     CHSB hsb(c1, c2, c3);
 
-    CRGB rgb = hsb.toRGB();
+    CRGB rgb = CRGBUtil::HSBtoRGB(hsb);
 
     ir = rgb.getRed  ()*255;
     ig = rgb.getGreen()*255;
@@ -2186,7 +2195,7 @@ toIntNoAlpha() const
   else {
     CHSB hsb(c1, c2, c3);
 
-    CRGB rgb = hsb.toRGB();
+    CRGB rgb = CRGBUtil::HSBtoRGB(hsb);
 
     ir = rgb.getRed  ()*255;
     ig = rgb.getGreen()*255;
@@ -2332,7 +2341,7 @@ PShape(StringP name) :
   if (! getSVG()->read(name->str()))
     return;
 
-  obj_ = getSVG()->getBlock();
+  obj_ = getSVG()->getRoot();
 #endif
 }
 
@@ -2406,7 +2415,7 @@ draw(PGraphicsP graphics, double x, double y, double w, double h) const
 
   svgRenderer_->beginDraw();
 
-  CSVGBlock *block = getSVG()->getBlock();
+  CSVGBlock *block = getSVG()->getRoot();
 
   svgRenderer_->setDataRange(block->getXMin(), block->getYMin(),
                              block->getXMax(), block->getYMax());
@@ -2416,7 +2425,7 @@ draw(PGraphicsP graphics, double x, double y, double w, double h) const
   if (! styleEnabled_) {
     CRGBA rgba;
 
-    svgRender_->setStyleEnabled(false);
+    //svgRender_->setStyleEnabled(false);
 
     graphics->stroke_.c.getRGBA(rgba);
 
@@ -2427,17 +2436,17 @@ draw(PGraphicsP graphics, double x, double y, double w, double h) const
 
     svgRenderer_->setFillColor(rgba);
 
-    svgRender_->draw(obj_);
+    //svgRender_->draw(obj_);
   }
   else {
-    svgRender_->setStyleEnabled(true);
+    //svgRender_->setStyleEnabled(true);
 
-    svgRender_->draw(obj_);
+    //svgRender_->draw(obj_);
   }
 
   svgRenderer_->endDraw();
 
-  svgRenderer_->paint(graphics->pixels.getPainter(), x1, y1);
+  //svgRenderer_->paint(graphics->pixels.getPainter(), x1, y1);
 #endif
 }
 

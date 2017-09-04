@@ -1,6 +1,8 @@
 #ifndef CProcessing_H
 #define CProcessing_H
 
+#define USE_SVG 1
+
 #include <cfloat>
 #include <CKeyType.h>
 #include <CCursor.h>
