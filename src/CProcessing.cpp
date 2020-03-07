@@ -2362,7 +2362,7 @@ getChild(StringP name)
   if (obj_)
     obj_->getAllChildrenOfId(name->str(), children);
 
-  PShape *shape;
+  PShape *shape { nullptr };
 
   if (! children.empty()) {
     shape = new PShape;
