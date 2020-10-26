@@ -1924,7 +1924,7 @@ operator=(const color &c)
 
 void
 Pixels::Ref::
-operator=(const Ref &ref)
+assign(const Ref &ref)
 {
   pixels.setPixel(x, y, ref.pixels.getPixel(ref.x, ref.y));
 }

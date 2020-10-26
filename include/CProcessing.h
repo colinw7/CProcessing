@@ -502,7 +502,8 @@ class Pixels {
 
     void operator=(uint c);
     void operator=(const color &c);
-    void operator=(const Ref &ref);
+
+    void assign(const Ref &ref);
 
     operator unsigned int() const;
     operator color() const;
