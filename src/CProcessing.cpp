@@ -11,6 +11,7 @@
 #endif
 
 #include <CQImageFilter.h>
+#include <CImageMgr.h>
 
 #include <CMathGen.h>
 #include <CMathRand.h>

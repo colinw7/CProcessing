@@ -52,6 +52,9 @@ DESTDIR = ../lib
 
 INCLUDEPATH += \
 ../include \
+../../CSVG/include \
+../../CCSS/include \
+../../CRenderer/include \
 ../../CMath/include \
 ../../CFile/include \
 ../../CFont/include \
