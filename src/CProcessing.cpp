@@ -11,6 +11,7 @@
 #endif
 
 #include <CQImageFilter.h>
+#include <CImageRenderer2D.h>
 #include <CImageMgr.h>
 
 #include <CMathGen.h>
@@ -43,7 +44,6 @@ static CImagePtr          image_;
 static CSVG              *svg_;
 static CSVGImageRenderer *svgRenderer_;
 #endif
-static CImageRenderer2D  *irenderer_;
 static CProcessingTimer  *timer_;
 
 int    &CProcessing::width  = graphics_.width;
@@ -337,8 +337,7 @@ getSVG()
     image_ = CImageMgrInst->createImage(src);
 
     svg_         = new CSVG;
-    irenderer_   = new CImageRenderer2D(image_);
-    svgRenderer_ = new CSVGImageRenderer(irenderer_);
+    svgRenderer_ = new CSVGImageRenderer(100, 100);
 
     svg_->setRenderer(svgRenderer_);
 
