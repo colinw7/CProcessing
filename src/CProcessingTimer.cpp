@@ -20,7 +20,7 @@ startTimer(int fps)
 {
   double delay = 1000.0/std::max(fps, 1);
 
-  id_ = QObject::startTimer(delay);
+  id_ = QObject::startTimer(int(delay));
 }
 
 void

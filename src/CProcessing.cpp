@@ -146,7 +146,7 @@ const float CProcessing::MIN_FLOAT = -FLT_MAX;
 const int CProcessing::MAX_INT = INT_MAX;
 const int CProcessing::MIN_INT = INT_MIN;
 
-const float CProcessing::PI = (float) M_PI;
+const float CProcessing::PI = float(M_PI);
 const float CProcessing::HALF_PI    = PI / 2.0f;
 const float CProcessing::THIRD_PI   = PI / 3.0f;
 const float CProcessing::QUARTER_PI = PI / 4.0f;
@@ -196,10 +196,10 @@ const int CProcessing::SOFT_LIGHT = 1 << 11;
 const int CProcessing::DODGE      = 1 << 12;
 const int CProcessing::BURN       = 1 << 13;
 
-const int CProcessing::ALPHA_MASK = 0xff000000;
-const int CProcessing::RED_MASK   = 0x00ff0000;
-const int CProcessing::GREEN_MASK = 0x0000ff00;
-const int CProcessing::BLUE_MASK  = 0x000000ff;
+const uint CProcessing::ALPHA_MASK = 0xff000000;
+const uint CProcessing::RED_MASK   = 0x00ff0000;
+const uint CProcessing::GREEN_MASK = 0x0000ff00;
+const uint CProcessing::BLUE_MASK  = 0x000000ff;
 
 const int CProcessing::CHATTER   = 0;
 const int CProcessing::COMPLAINT = 1;
@@ -354,8 +354,8 @@ void
 CProcessing::
 doInit()
 {
-  window_    = NULL;
-  path_      = NULL;
+  window_    = nullptr;
+  path_      = nullptr;
   fps_       = 10;
   loop_      = true;
   startTime_ = COSTime::getHRTime();
@@ -404,7 +404,7 @@ CProcessing::
 doSetup()
 {
   if (! setupDone_) {
-    CMathRand::seedRand(time(NULL));
+    CMathRand::seedRand(int(time(nullptr)));
 
     setup();
 
@@ -961,7 +961,7 @@ point(double x, double y)
   if (graphics_.stroke_.active) {
     graphics_.pixels.getPainter()->setPen(graphics_.stroke_.c.qcolor());
 
-    graphics_.pixels.getPainter()->drawPoint(x, y);
+    graphics_.pixels.getPainter()->drawPoint(int(x), int(y));
   }
 }
 
@@ -1475,7 +1475,7 @@ int
 CProcessing::
 second()
 {
-  time_t t = time(NULL);
+  time_t t = time(nullptr);
 
   return t % 60;
 }
@@ -1569,7 +1569,7 @@ void
 CProcessing::
 randomSeed(double seed)
 {
-  return CMathRand::seedRand(seed);
+  return CMathRand::seedRand(int(seed));
 }
 
 double
@@ -1675,7 +1675,7 @@ nf(int i, int digits)
 {
   std::vector<char> str;
 
-  str.resize(abs(digits) + 32);
+  str.resize(size_t(abs(digits) + 32));
 
   sprintf(&str[0], "%0*d", digits, i);
 
@@ -1688,7 +1688,7 @@ nf(float f, int left, int right)
 {
   std::vector<char> str;
 
-  str.resize(abs(left) + abs(right) + 32);
+  str.resize(size_t(abs(left) + abs(right) + 32));
 
   sprintf(&str[0], "%0*.*f", left, right, f);
 
@@ -1747,7 +1747,7 @@ Pixels() :
  w_(100), h_(100), format_(ARGB)
 {
   image_   = QImage(w_, h_, QImage::Format_ARGB32);
-  painter_ = NULL;
+  painter_ = nullptr;
 }
 
 Pixels::
@@ -1757,7 +1757,7 @@ Pixels(const Pixels &p) :
  h_     (p.h_),
  format_(p.format_)
 {
-  painter_ = NULL;
+  painter_ = nullptr;
 }
 
 Pixels::
@@ -1772,7 +1772,7 @@ operator=(const Pixels &p)
 {
   delete painter_;
 
-  painter_ = NULL;
+  painter_ = nullptr;
 
   image_  = p.image_;
   w_      = p.w_;
@@ -1819,7 +1819,7 @@ setImage(QImage image)
 {
   delete painter_;
 
-  painter_ = NULL;
+  painter_ = nullptr;
 
   image_ = image;
   w_     = image_.width();
@@ -1843,7 +1843,7 @@ void
 Pixels::
 draw(QPainter *painter, double x, double y) const
 {
-  painter->drawImage(x, y, image_);
+  painter->drawImage(int(x), int(y), image_);
 }
 
 Pixels::Ref
@@ -2061,14 +2061,17 @@ double
 color::
 red() const
 {
-  if (mode == RGB)
+  if      (mode == RGB)
     return c1;
-  else {
+  else if (mode == HSB) {
     CHSB hsb(c1, c2, c3);
 
     CRGB rgb = CRGBUtil::HSBtoRGB(hsb);
 
     return rgb.getRed();
+  }
+  else {
+    assert(false);
   }
 }
 
@@ -2076,14 +2079,17 @@ double
 color::
 green() const
 {
-  if (mode == RGB)
+  if      (mode == RGB)
     return c2;
-  else {
+  else if (mode == HSB) {
     CHSB hsb(c1, c2, c3);
 
     CRGB rgb = CRGBUtil::HSBtoRGB(hsb);
 
     return rgb.getGreen();
+  }
+  else {
+    assert(false);
   }
 }
 
@@ -2091,14 +2097,17 @@ double
 color::
 blue() const
 {
-  if (mode == RGB)
+  if      (mode == RGB)
     return c3;
-  else {
+  else if (mode == HSB) {
     CHSB hsb(c1, c2, c3);
 
     CRGB rgb = CRGBUtil::HSBtoRGB(hsb);
 
     return rgb.getBlue();
+  }
+  else {
+    assert(false);
   }
 }
 
@@ -2113,10 +2122,13 @@ double
 color::
 brightness() const
 {
-  if (mode == RGB)
+  if      (mode == RGB)
     return CRGBUtil::RGBtoHSB(CRGB(c1, c2, c3)).getBrightness();
-  else
+  else if (mode == HSB)
     return CHSB(c1, c2, c3).getBrightness();
+  else {
+    assert(false);
+  }
 }
 
 QColor
@@ -2125,22 +2137,25 @@ qcolor() const
 {
   int qr, qg, qb, qa;
 
-  if (mode == RGB) {
-    qr = min(max(c1, 0.0), 1.0)*255;
-    qg = min(max(c2, 0.0), 1.0)*255;
-    qb = min(max(c3, 0.0), 1.0)*255;
+  if      (mode == RGB) {
+    qr = int(min(max(c1, 0.0), 1.0)*255);
+    qg = int(min(max(c2, 0.0), 1.0)*255);
+    qb = int(min(max(c3, 0.0), 1.0)*255);
   }
-  else {
+  else if (mode == HSB) {
     CHSB hsb(c1, c2, c3);
 
     CRGB rgb = CRGBUtil::HSBtoRGB(hsb);
 
-    qr = min(max(rgb.getRed  (), 0.0), 1.0)*255;
-    qg = min(max(rgb.getGreen(), 0.0), 1.0)*255;
-    qb = min(max(rgb.getBlue (), 0.0), 1.0)*255;
+    qr = int(min(max(rgb.getRed  (), 0.0), 1.0)*255);
+    qg = int(min(max(rgb.getGreen(), 0.0), 1.0)*255);
+    qb = int(min(max(rgb.getBlue (), 0.0), 1.0)*255);
+  }
+  else {
+    assert(false);
   }
 
-  qa = min(max(a, 0.0), 1.0)*255;
+  qa = int(min(max(a, 0.0), 1.0)*255);
 
   //assert(qr >= 0 && qr <= 255);
   //assert(qg >= 0 && qg <= 255);
@@ -2156,21 +2171,24 @@ toInt() const
 {
   uint ir, ig, ib;
 
-  uint ia = 255*a;
+  uint ia = uint(255*a);
 
-  if (mode == RGB) {
-    ir = 255*c1;
-    ig = 255*c2;
-    ib = 255*c3;
+  if      (mode == RGB) {
+    ir = uint(255*c1);
+    ig = uint(255*c2);
+    ib = uint(255*c3);
   }
-  else {
+  else if (mode == HSB) {
     CHSB hsb(c1, c2, c3);
 
     CRGB rgb = CRGBUtil::HSBtoRGB(hsb);
 
-    ir = rgb.getRed  ()*255;
-    ig = rgb.getGreen()*255;
-    ib = rgb.getBlue ()*255;
+    ir = uint(rgb.getRed  ()*255);
+    ig = uint(rgb.getGreen()*255);
+    ib = uint(rgb.getBlue ()*255);
+  }
+  else {
+    assert(false);
   }
 
   uint i = ((ia & 0xFF) << 24 |
@@ -2187,25 +2205,28 @@ toIntNoAlpha() const
 {
   uint ir, ig, ib;
 
-  if (mode == RGB) {
-    ir = 255*c1;
-    ig = 255*c2;
-    ib = 255*c3;
+  if      (mode == RGB) {
+    ir = uint(255*c1);
+    ig = uint(255*c2);
+    ib = uint(255*c3);
   }
-  else {
+  else if (mode == HSB) {
     CHSB hsb(c1, c2, c3);
 
     CRGB rgb = CRGBUtil::HSBtoRGB(hsb);
 
-    ir = rgb.getRed  ()*255;
-    ig = rgb.getGreen()*255;
-    ib = rgb.getBlue ()*255;
+    ir = uint(rgb.getRed  ()*255);
+    ig = uint(rgb.getGreen()*255);
+    ib = uint(rgb.getBlue ()*255);
+  }
+  else {
+    assert(false);
   }
 
-  uint i = ((     0xFF) << 24 |
-            (ir & 0xFF) << 16 |
-            (ig & 0xFF) << 8  |
-            (ib & 0xFF)      );
+  uint i = uint( uint(0xFF) << 24 |
+                (ir & 0xFF) << 16 |
+                (ig & 0xFF) << 8  |
+                (ib & 0xFF)      );
 
   return i;
 }
@@ -2329,13 +2350,13 @@ getImage() const
 
 PShape::
 PShape() :
- obj_(NULL), styleEnabled_(true)
+ obj_(nullptr), styleEnabled_(true)
 {
 }
 
 PShape::
 PShape(StringP name) :
- obj_(NULL), styleEnabled_(true)
+ obj_(nullptr), styleEnabled_(true)
 {
 #ifdef USE_SVG
   if (! getSVG()->read(name->str()))
@@ -2411,7 +2432,7 @@ draw(PGraphicsP graphics, double x, double y, double w, double h) const
   graphics->matrix2_.multiplyPoint(x    , y    , &x1, &y1);
   graphics->matrix2_.multiplyPoint(x + w, y + h, &x2, &y2);
 
-  svgRenderer_->setSize(fabs(x2 - x1), fabs(y2 - y1));
+  svgRenderer_->setSize(int(fabs(x2 - x1)), int(fabs(y2 - y1)));
 
   svgRenderer_->beginDraw();
 
@@ -3009,7 +3030,7 @@ line(double x1, double y1, double x2, double y2)
   if (stroke_.active) {
     stroke_.setPen(pixels.getPainter());
 
-    pixels.getPainter()->drawLine(x1, y1, x2, y2);
+    pixels.getPainter()->drawLine(int(x1), int(y1), int(x2), int(y2));
   }
 }
 
@@ -3043,9 +3064,9 @@ triangle(double x1, double y1, double x2, double y2, double x3, double y3)
 
   QPolygon poly(3);
 
-  poly.setPoint(0, x1, y1);
-  poly.setPoint(1, x2, y2);
-  poly.setPoint(2, x3, y3);
+  poly.setPoint(0, int(x1), int(y1));
+  poly.setPoint(1, int(x2), int(y2));
+  poly.setPoint(2, int(x3), int(y3));
 
   pixels.getPainter()->drawPolygon(poly);
 }
@@ -3056,10 +3077,10 @@ quad(double x1, double y1, double x2, double y2, double x3, double y3, double x4
 {
   QPolygon poly(4);
 
-  poly.setPoint(0, x1, y1);
-  poly.setPoint(1, x2, y2);
-  poly.setPoint(2, x3, y3);
-  poly.setPoint(3, x4, y4);
+  poly.setPoint(0, int(x1), int(y1));
+  poly.setPoint(1, int(x2), int(y2));
+  poly.setPoint(2, int(x3), int(y3));
+  poly.setPoint(3, int(x4), int(y4));
 
   if (fill_.active)
     fill_.setBrush(pixels.getPainter());
@@ -3132,9 +3153,9 @@ rect(double p1, double p2, double p3, double p4)
   else
     pixels.getPainter()->setPen(QPen(Qt::NoPen));
 
-  pixels.getPainter()->drawRect(QRect(x, y, w, h));
+  pixels.getPainter()->drawRect(QRect(int(x), int(y), int(w), int(h)));
 
-//pixels.getPainter()->fillRect(QRect(x, y, w, h), QBrush(fill_.c.qcolor()));
+//pixels.getPainter()->fillRect(QRect(int(x), int(y), int(w), int(h), QBrush(fill_.c.qcolor()));
 }
 
 void
@@ -3178,7 +3199,7 @@ ellipse(double p1, double p2, double p3, double p4)
   else
     pixels.getPainter()->setPen(QPen(Qt::NoPen));
 
-  pixels.getPainter()->drawEllipse(QRect(x, y, w, h));
+  pixels.getPainter()->drawEllipse(QRect(int(x), int(y), int(w), int(h)));
 }
 
 void
@@ -3270,10 +3291,10 @@ image(PImageP i, double x, double y)
 
     QImage qimage1 = CQImageFilter::tint(qimage, rgba);
 
-    pixels.getPainter()->drawImage(x, y, qimage1);
+    pixels.getPainter()->drawImage(int(x), int(y), qimage1);
   }
   else
-    pixels.getPainter()->drawImage(x, y, qimage);
+    pixels.getPainter()->drawImage(int(x), int(y), qimage);
 }
 
 void
@@ -3285,9 +3306,9 @@ image(PImageP i, double x, double y, double w, double h)
   QRect rect;
 
   if      (imageMode_ == CORNER)
-    rect = QRect(x, y, w, h);
+    rect = QRect(int(x), int(y), int(w), int(h));
   else if (imageMode_ == CENTER)
-    rect = QRect(x - w/2, y - h/2, w, h);
+    rect = QRect(int(x - w/2), int(y - h/2), int(w), int(h));
 
   if (tinted_) {
     CRGBA rgba; tintColor_.getRGBA(rgba);
@@ -3318,10 +3339,10 @@ image(PGraphicsP g, double x, double y)
 
     QImage qimage1 = CQImageFilter::tint(qimage, rgba);
 
-    pixels.getPainter()->drawImage(x, y, qimage1);
+    pixels.getPainter()->drawImage(int(x), int(y), qimage1);
   }
   else
-    pixels.getPainter()->drawImage(x, y, qimage);
+    pixels.getPainter()->drawImage(int(x), int(y), qimage);
 }
 
 void
@@ -3333,9 +3354,9 @@ image(PGraphicsP g, double x, double y, double w, double h)
   QRect rect;
 
   if      (imageMode_ == CORNER)
-    rect = QRect(x, y, w, h);
+    rect = QRect(int(x), int(y), int(w), int(h));
   else if (imageMode_ == CENTER)
-    rect = QRect(x - w/2, y - h/2, w, h);
+    rect = QRect(int(x - w/2), int(y - h/2), int(w), int(h));
 
   if (tinted_) {
     CRGBA rgba; tintColor_.getRGBA(rgba);
@@ -3518,7 +3539,7 @@ text(StringP s, double x, double y)
 
   path_ = new QPainterPath();
 
-  path_->addText(QPoint(x, y), qfont, text);
+  path_->addText(QPoint(int(x), int(y)), qfont, text);
 
   if (font_->getSmooth())
     pixels.getPainter()->setRenderHint(QPainter::Antialiasing);
@@ -3770,7 +3791,7 @@ endShape(int closeType)
     for (p1 = shapePointList_.begin(), p2 = shapePointList_.end(); p1 != p2; ++p1) {
       const ShapePoint &point = *p1;
 
-      pixels.getPainter()->drawPoint(point.x1, point.y1);
+      pixels.getPainter()->drawPoint(int(point.x1), int(point.y1));
     }
   }
   else if (shapeMode_ == LINES) {
@@ -3783,7 +3804,7 @@ endShape(int closeType)
 
       const ShapePoint &point2 = *p1;
 
-      pixels.getPainter()->drawLine(point1.x1, point1.y1, point2.x1, point2.y1);
+      pixels.getPainter()->drawLine(int(point1.x1), int(point1.y1), int(point2.x1), int(point2.y1));
     }
   }
   else if (shapeMode_ == LINE_STRIP) {
@@ -3792,7 +3813,7 @@ endShape(int closeType)
     int num_lines = 0;
 
     if (shapePointList_.size() >= 2)
-      num_lines = shapePointList_.size() - 1;
+      num_lines = int(shapePointList_.size() - 1);
 
     p2 = shapePointList_.begin();
     p3 = shapePointList_.end  ();
@@ -3803,7 +3824,7 @@ endShape(int closeType)
       const ShapePoint &point1 = *p1;
       const ShapePoint &point2 = *p2;
 
-      pixels.getPainter()->drawLine(point1.x1, point1.y1, point2.x1, point2.y1);
+      pixels.getPainter()->drawLine(int(point1.x1), int(point1.y1), int(point2.x1), int(point2.y1));
     }
   }
   else if (shapeMode_ == TRIANGLES) {
@@ -3830,9 +3851,9 @@ endShape(int closeType)
 
       QPolygon poly(3);
 
-      poly.setPoint(0, point1.x1, point1.y1);
-      poly.setPoint(1, point2.x1, point2.y1);
-      poly.setPoint(2, point3.x1, point3.y1);
+      poly.setPoint(0, int(point1.x1), int(point1.y1));
+      poly.setPoint(1, int(point2.x1), int(point2.y1));
+      poly.setPoint(2, int(point3.x1), int(point3.y1));
 
       pixels.getPainter()->drawPolygon(poly);
     }
@@ -3865,10 +3886,10 @@ endShape(int closeType)
 
       QPolygon poly(4);
 
-      poly.setPoint(0, point1.x1, point1.y1);
-      poly.setPoint(1, point2.x1, point2.y1);
-      poly.setPoint(2, point3.x1, point3.y1);
-      poly.setPoint(3, point4.x1, point4.y1);
+      poly.setPoint(0, int(point1.x1), int(point1.y1));
+      poly.setPoint(1, int(point2.x1), int(point2.y1));
+      poly.setPoint(2, int(point3.x1), int(point3.y1));
+      poly.setPoint(3, int(point4.x1), int(point4.y1));
 
       pixels.getPainter()->drawPolygon(poly);
     }

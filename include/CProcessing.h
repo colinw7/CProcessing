@@ -195,7 +195,7 @@ namespace CProcessing {
   extern const int DILATE;
 
   // blend mode keyword definitions
-  // @see processing.core.PImage#blendColor(int,int,int)
+  // @see processing.core.PImage#blendColor(int, int, int)
 
   extern const int REPLACE;
   extern const int BLEND;
@@ -213,21 +213,18 @@ namespace CProcessing {
   extern const int DODGE;
   extern const int BURN;
 
-  // colour component bitmasks
-
-  extern const int ALPHA_MASK;
-  extern const int RED_MASK;
-  extern const int GREEN_MASK;
-  extern const int BLUE_MASK;
+  // color component bitmasks
+  extern const uint ALPHA_MASK;
+  extern const uint RED_MASK;
+  extern const uint GREEN_MASK;
+  extern const uint BLUE_MASK;
 
   // for messages
-
   extern const int CHATTER;
   extern const int COMPLAINT;
   extern const int PROBLEM;
 
   // types of projection matrices
-
   extern const int CUSTOM; // user-specified fanciness
   extern const int ORTHOGRAPHIC; // 2D isometric projection
   extern const int PERSPECTIVE; // perspective matrix
@@ -451,7 +448,7 @@ struct color {
   color &operator=(const color &c);
 
   operator int() const {
-    return toInt();
+    return int(toInt());
   }
 
   void setAlpha(double a1) { a = a1; }
@@ -640,7 +637,7 @@ class PShape : public PObject {
 
 class PFont : public PObject {
  private:
-  ARRAY1D(char,CharArray1D)
+  ARRAY1D(char, CharArray1D)
 
   StringP     name_;
   int         size_;
@@ -925,7 +922,7 @@ namespace CProcessing {
 };
 
 namespace CProcessing {
-  ARRAY1D(char,CharArray1D)
+  ARRAY1D(char, CharArray1D)
 
   void setWindow(QWidget *window);
 
