@@ -11,7 +11,7 @@ class CProcessingTimer : public QObject {
  public:
   CProcessingTimer();
 
-  void timerEvent(QTimerEvent *);
+  void timerEvent(QTimerEvent *) override;
 
   void startTimer(int fps);
   void stopTimer();

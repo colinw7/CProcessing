@@ -1300,7 +1300,7 @@ class Thread : public Runnable {
     data_->start();
   }
 
-  virtual void run() { }
+  void run() override { }
 
  private:
   class ThreadData : public CThread {
@@ -1309,7 +1309,7 @@ class Thread : public Runnable {
      t_(t) {
     }
 
-    void *execute() {
+    void *execute() override {
       t_->run();
 
       return NULL;

@@ -17,18 +17,18 @@ class CProcessingWindow3D : public QGLWidget {
  public:
   CProcessingWindow3D(int w, int h);
 
-  void initializeGL();
+  void initializeGL() override;
 
-  void resizeGL(int w, int h);
+  void resizeGL(int w, int h) override;
 
-  void paintGL();
+  void paintGL() override;
 
-  void mousePressEvent(QMouseEvent *);
-  void mouseMoveEvent(QMouseEvent *);
-  void mouseReleaseEvent(QMouseEvent *);
+  void mousePressEvent(QMouseEvent *) override;
+  void mouseMoveEvent(QMouseEvent *) override;
+  void mouseReleaseEvent(QMouseEvent *) override;
 
-  void keyPressEvent(QKeyEvent *);
-  void keyReleaseEvent(QKeyEvent *);
+  void keyPressEvent(QKeyEvent *) override;
+  void keyReleaseEvent(QKeyEvent *) override;
 
  private:
   CQGLControl        *control_;
